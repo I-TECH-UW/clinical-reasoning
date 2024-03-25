@@ -35,11 +35,12 @@ jobs:
         if: success() || failure() # always run even if the previous step fails
         with:
           report_paths: "**/target/surefire-reports/TEST-*.xml"
+          job_name: "Build"
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.x
       - uses: actions/cache@v4

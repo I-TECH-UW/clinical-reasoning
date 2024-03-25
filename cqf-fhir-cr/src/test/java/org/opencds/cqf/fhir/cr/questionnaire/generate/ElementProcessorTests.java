@@ -3,6 +3,7 @@ package org.opencds.cqf.fhir.cr.questionnaire.generate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.opencds.cqf.fhir.cr.helpers.RequestHelpers.newGenerateRequestForVersion;
@@ -53,6 +54,13 @@ public class ElementProcessorTests {
     @InjectMocks
     @Spy
     org.opencds.cqf.fhir.cr.questionnaire.generate.r5.ElementProcessor elementProcessorR5;
+
+    @Test
+    void testNullElementTypeThrows() {
+        assertThrows(IllegalArgumentException.class, () -> elementProcessorDstu3.parseItemType(null, false));
+        assertThrows(IllegalArgumentException.class, () -> elementProcessorR4.parseItemType(null, false));
+        assertThrows(IllegalArgumentException.class, () -> elementProcessorR5.parseItemType(null, false));
+    }
 
     @Test
     void testDstu3ItemTypes() {
@@ -214,7 +222,6 @@ public class ElementProcessorTests {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void testElementWithCqfExpressionWithResourceResult() {
         doReturn(repository).when(libraryEngine).getRepository();
         doReturn(fhirContextR4).when(repository).fhirContext();
