@@ -533,20 +533,31 @@ public class IgRepository implements Repository {
     @SuppressWarnings("unchecked")
     public <R extends IBaseResource, P extends IBaseParameters, T extends IBaseResource> R invoke(
             Class<T> resourceType, String name, P parameters, Class<R> returnType, Map<String, String> headers) {
-        return (R) this.operationRegistry.execute(this, name, resourceType, null, parameters);
+        return (R) this.operationRegistry
+            .buildOperation(this, name)
+            .resourceType(resourceType)
+            .parameters(parameters)
+            .execute();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <R extends IBaseResource, P extends IBaseParameters, I extends IIdType> R invoke(
             I id, String name, P parameters, Class<R> returnType, Map<String, String> headers) {
-        return (R) this.operationRegistry.execute(this, name, null, id, parameters);
+        return (R) this.operationRegistry
+            .buildOperation(this, name)
+            .id(id)
+            .parameters(parameters)
+            .execute();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <R extends IBaseResource, P extends IBaseParameters> R invoke(
             String name, P parameters, Class<R> returnType, Map<String, String> headers) {
-        return (R) this.operationRegistry.execute(this, name, null, null, parameters);
+        return (R) this.operationRegistry
+            .buildOperation(this, name)
+            .parameters(parameters)
+            .execute();
     }
 }

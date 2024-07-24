@@ -31,10 +31,12 @@ import org.opencds.cqf.fhir.cql.engine.model.FhirModelResolverCache;
 import org.opencds.cqf.fhir.cql.engine.retrieve.RetrieveSettings.SEARCH_FILTER_MODE;
 import org.opencds.cqf.fhir.cql.engine.retrieve.RetrieveSettings.TERMINOLOGY_FILTER_MODE;
 import org.opencds.cqf.fhir.cql.engine.terminology.TerminologySettings.VALUESET_EXPANSION_MODE;
-import org.opencds.cqf.fhir.cr.TestOperationProvider;
 import org.opencds.cqf.fhir.utility.Ids;
 import org.opencds.cqf.fhir.utility.monad.Eithers;
+import org.opencds.cqf.fhir.utility.operation.OperationRegistry;
 import org.opencds.cqf.fhir.utility.repository.InMemoryFhirRepository;
+import org.opencds.cqf.fhir.utility.repository.ig.EncodingBehavior;
+import org.opencds.cqf.fhir.utility.repository.ig.IgConventions;
 import org.opencds.cqf.fhir.utility.repository.ig.IgRepository;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -67,8 +69,9 @@ public class PlanDefinition {
         }
 
         public Given repositoryFor(FhirContext fhirContext, String repositoryPath) {
+            var root = Paths.get(getResourcePath(this.getClass()) + "/" + CLASS_PATH + "/" + repositoryPath);
             this.repository = new IgRepository(
-                    fhirContext, Paths.get(getResourcePath(this.getClass()) + "/" + CLASS_PATH + "/" + repositoryPath));
+                    fhirContext, root);
             return this;
         }
 
@@ -78,10 +81,6 @@ public class PlanDefinition {
         }
 
         public PlanDefinitionProcessor buildProcessor(Repository repository) {
-            if (repository instanceof IgRepository) {
-                ((IgRepository) repository)
-                        .setOperationProvider(TestOperationProvider.newProvider(repository.fhirContext()));
-            }
             if (evaluationSettings == null) {
                 evaluationSettings = EvaluationSettings.getDefault();
                 evaluationSettings

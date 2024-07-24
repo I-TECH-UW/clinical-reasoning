@@ -26,9 +26,8 @@ import org.opencds.cqf.fhir.cr.activitydefinition.apply.IRequestResolverFactory;
 import org.opencds.cqf.fhir.cr.common.ResourceResolver;
 import org.opencds.cqf.fhir.utility.Ids;
 import org.opencds.cqf.fhir.utility.monad.Either3;
-import org.opencds.cqf.fhir.utility.repository.operations.IActivityDefinitionProcessor;
 
-public class ActivityDefinitionProcessor implements IActivityDefinitionProcessor {
+public class ActivityDefinitionProcessor {
     // private static final Logger logger = LoggerFactory.getLogger(ActivityDefinitionProcessor.class);
     protected final ModelResolver modelResolver;
     protected final EvaluationSettings evaluationSettings;
@@ -65,7 +64,6 @@ public class ActivityDefinitionProcessor implements IActivityDefinitionProcessor
                 : new ApplyProcessor(this.repository, this.requestResolverFactory);
     }
 
-    @Override
     public <C extends IPrimitiveType<String>, R extends IBaseResource> IBaseResource apply(
             Either3<C, IIdType, R> activityDefinition,
             String subjectId,
@@ -96,7 +94,6 @@ public class ActivityDefinitionProcessor implements IActivityDefinitionProcessor
                 null);
     }
 
-    @Override
     public <C extends IPrimitiveType<String>, R extends IBaseResource> IBaseResource apply(
             Either3<C, IIdType, R> activityDefinition,
             String subjectId,

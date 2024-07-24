@@ -42,21 +42,18 @@ public class RepositoryOperationProvider implements IRepositoryOperationProvider
     private final String questionnaireResponse = "QuestionnaireResponse";
     private final FhirContext fhirContext;
     private final OperationParametersParser operationParametersParser;
-    private final IActivityDefinitionProcessorFactory activityDefinitionProcessorFactory;
     private final IPlanDefinitionProcessorFactory planDefinitionProcessorFactory;
     private final IQuestionnaireProcessorFactory questionnaireProcessorFactory;
     private final IQuestionnaireResponseProcessorFactory questionnaireResponseProcessorFactory;
 
     public RepositoryOperationProvider(
             FhirContext fhirContext,
-            IActivityDefinitionProcessorFactory activityDefinitionProcessorFactory,
             IPlanDefinitionProcessorFactory planDefinitionProcessorFactory,
             IQuestionnaireProcessorFactory questionnaireProcessorFactory,
             IQuestionnaireResponseProcessorFactory questionnaireResponseProcessorFactory) {
         this.fhirContext = fhirContext;
         this.operationParametersParser = new OperationParametersParser(
                 AdapterFactory.forFhirVersion(this.fhirContext.getVersion().getVersion()));
-        this.activityDefinitionProcessorFactory = activityDefinitionProcessorFactory;
         this.planDefinitionProcessorFactory = planDefinitionProcessorFactory;
         this.questionnaireProcessorFactory = questionnaireProcessorFactory;
         this.questionnaireResponseProcessorFactory = questionnaireResponseProcessorFactory;
@@ -78,10 +75,6 @@ public class RepositoryOperationProvider implements IRepositoryOperationProvider
     @SuppressWarnings("unchecked")
     protected <C extends IPrimitiveType<String>, R extends IBaseResource> R invokeActivityDefinition(
             Repository repository, IIdType id, String operationName, Map<String, Object> paramMap) {
-        if (activityDefinitionProcessorFactory == null) {
-            throw new IllegalArgumentException(String.format(noFactoryError, activityDef, operationName));
-        }
-        var processor = activityDefinitionProcessorFactory.create(repository);
         switch (operationName) {
             case "$apply":
                 var activityDefinition = Eithers.for3((C) paramMap.get(APPLY_PARAMETER_CANONICAL), id, (R)
@@ -90,23 +83,7 @@ public class RepositoryOperationProvider implements IRepositoryOperationProvider
                 var encounter = (IPrimitiveType<String>) paramMap.get(APPLY_PARAMETER_ENCOUNTER);
                 var practitioner = (IPrimitiveType<String>) paramMap.get(APPLY_PARAMETER_PRACTITIONER);
                 var organization = (IPrimitiveType<String>) paramMap.get(APPLY_PARAMETER_ORGANIZATION);
-                return (R) processor.apply(
-                        activityDefinition,
-                        subject,
-                        encounter == null ? null : encounter.getValue(),
-                        practitioner == null ? null : practitioner.getValue(),
-                        organization == null ? null : organization.getValue(),
-                        (IBaseDatatype) paramMap.get(APPLY_PARAMETER_USER_TYPE),
-                        (IBaseDatatype) paramMap.get(APPLY_PARAMETER_USER_LANGUAGE),
-                        (IBaseDatatype) paramMap.get(APPLY_PARAMETER_USER_TASK_CONTEXT),
-                        (IBaseDatatype) paramMap.get(APPLY_PARAMETER_SETTING),
-                        (IBaseDatatype) paramMap.get(APPLY_PARAMETER_SETTING_CONTEXT),
-                        (IBaseParameters) paramMap.get(APPLY_PARAMETER_PARAMETERS),
-                        (Boolean) paramMap.get(APPLY_PARAMETER_USE_SERVER_DATA),
-                        (IBaseBundle) paramMap.get(APPLY_PARAMETER_DATA),
-                        (IBaseResource) paramMap.get(APPLY_PARAMETER_DATA_ENDPOINT),
-                        (IBaseResource) paramMap.get(APPLY_PARAMETER_CONTENT_ENDPOINT),
-                        (IBaseResource) paramMap.get(APPLY_PARAMETER_TERMINOLOGY_ENDPOINT));
+                return null;
 
             default:
                 throw new IllegalArgumentException(String.format(unSupportedOpError, operationName, activityDef));
