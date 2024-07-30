@@ -9,6 +9,7 @@ import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnclassifiedServerFailureException;
@@ -38,6 +39,7 @@ import org.opencds.cqf.fhir.api.Repository;
 import org.opencds.cqf.fhir.utility.Ids;
 import org.opencds.cqf.fhir.utility.matcher.ResourceMatcher;
 import org.opencds.cqf.fhir.utility.operation.OperationRegistry;
+import org.opencds.cqf.fhir.utility.operation.OperationRegistry.OperationInvocationParams;
 import org.opencds.cqf.fhir.utility.repository.Repositories;
 import org.opencds.cqf.fhir.utility.repository.ig.EncodingBehavior.PreserveEncoding;
 import org.opencds.cqf.fhir.utility.repository.ig.IgConventions.CategoryLayout;
@@ -530,34 +532,47 @@ public class IgRepository implements Repository {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <R extends IBaseResource, P extends IBaseParameters, T extends IBaseResource> R invoke(
             Class<T> resourceType, String name, P parameters, Class<R> returnType, Map<String, String> headers) {
-        return (R) this.operationRegistry
-            .buildOperation(this, name)
-            .resourceType(resourceType)
-            .parameters(parameters)
-            .execute();
+        var o = this.operationRegistry
+                .buildOperation(this, name)
+                .resourceType(resourceType)
+                .parameters(parameters);
+
+        return invoke(o, returnType);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <R extends IBaseResource, P extends IBaseParameters, I extends IIdType> R invoke(
             I id, String name, P parameters, Class<R> returnType, Map<String, String> headers) {
-        return (R) this.operationRegistry
-            .buildOperation(this, name)
-            .id(id)
-            .parameters(parameters)
-            .execute();
+        var o = this.operationRegistry.buildOperation(this, name).id(id).parameters(parameters);
+
+        return invoke(o, returnType);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <R extends IBaseResource, P extends IBaseParameters> R invoke(
             String name, P parameters, Class<R> returnType, Map<String, String> headers) {
-        return (R) this.operationRegistry
-            .buildOperation(this, name)
-            .parameters(parameters)
-            .execute();
+        var o = this.operationRegistry.buildOperation(this, name).parameters(parameters);
+
+        return invoke(o, returnType);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <R extends IBaseResource> R invoke(OperationInvocationParams params, Class<R> returnType) {
+        try {
+            return (R) params.execute();
+        } catch (BaseServerResponseException e) {
+            // Underlying exception is already a FHIR exception
+            throw e;
+        } catch (ClassCastException e) {
+            throw new UnclassifiedServerFailureException(
+                    500,
+                    String.format(
+                            "Operation '%s' did not return the expected resource type '%s'",
+                            params.name(), returnType.getSimpleName()));
+        } catch (Exception e) {
+            throw new UnclassifiedServerFailureException(500, e.getMessage());
+        }
     }
 }

@@ -33,10 +33,7 @@ import org.opencds.cqf.fhir.cql.engine.retrieve.RetrieveSettings.TERMINOLOGY_FIL
 import org.opencds.cqf.fhir.cql.engine.terminology.TerminologySettings.VALUESET_EXPANSION_MODE;
 import org.opencds.cqf.fhir.utility.Ids;
 import org.opencds.cqf.fhir.utility.monad.Eithers;
-import org.opencds.cqf.fhir.utility.operation.OperationRegistry;
 import org.opencds.cqf.fhir.utility.repository.InMemoryFhirRepository;
-import org.opencds.cqf.fhir.utility.repository.ig.EncodingBehavior;
-import org.opencds.cqf.fhir.utility.repository.ig.IgConventions;
 import org.opencds.cqf.fhir.utility.repository.ig.IgRepository;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -70,8 +67,7 @@ public class PlanDefinition {
 
         public Given repositoryFor(FhirContext fhirContext, String repositoryPath) {
             var root = Paths.get(getResourcePath(this.getClass()) + "/" + CLASS_PATH + "/" + repositoryPath);
-            this.repository = new IgRepository(
-                    fhirContext, root);
+            this.repository = new IgRepository(fhirContext, root);
             return this;
         }
 

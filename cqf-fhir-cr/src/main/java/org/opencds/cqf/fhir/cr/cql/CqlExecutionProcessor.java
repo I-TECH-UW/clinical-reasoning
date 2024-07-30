@@ -1,4 +1,4 @@
-package org.opencds.cqf.fhir.cr.cpg;
+package org.opencds.cqf.fhir.cr.cql;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
 import java.util.ArrayList;

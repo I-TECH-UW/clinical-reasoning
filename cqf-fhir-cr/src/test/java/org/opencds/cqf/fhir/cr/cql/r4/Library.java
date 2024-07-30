@@ -1,4 +1,4 @@
-package org.opencds.cqf.fhir.cr.cpg.r4;
+package org.opencds.cqf.fhir.cr.cql.r4;
 
 import static org.opencds.cqf.fhir.test.Resources.getResourcePath;
 
