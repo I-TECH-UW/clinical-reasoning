@@ -160,14 +160,14 @@ public class PlanDefinitionProcessor extends BasePlanDefinitionProcessor<PlanDef
         "The planDefinition passed to FhirDal was not a valid instance of PlanDefinition.class")
             .orElse(null);
 
-    logger.info("Performing $apply operation on {}", planDefinition.getIdPart());
+    logger.info("Performing $apply operation on {}", planDefinition.getIdElement().getIdPart());
 
     oc = new OperationOutcome();
-    oc.setId("apply-outcome-" + planDefinition.getIdPart());
+    oc.setId("apply-outcome-" + planDefinition.getIdElement().getIdPart());
 
     this.questionnaire = new Questionnaire();
     this.questionnaire
-        .setId(new IdType(FHIRAllTypes.QUESTIONNAIRE.toCode(), planDefinition.getIdPart()));
+        .setId(new IdType(FHIRAllTypes.QUESTIONNAIRE.toCode(), planDefinition.getIdElement().getIdPart()));
     this.questionnaireItemGenerator =
         new QuestionnaireItemGenerator(repository, patientId, parameters, bundle, libraryEngine);
 
@@ -234,7 +234,7 @@ public class PlanDefinitionProcessor extends BasePlanDefinitionProcessor<PlanDef
     if (!oc.getIssue().isEmpty()) {
       requestGroup.addContained(oc);
       requestGroup.addExtension(Constants.EXT_CRMI_MESSAGES,
-          new Reference("#" + oc.getIdPart()));
+          new Reference("#" + oc.getIdElement().getIdPart()));
     }
     var carePlan = new CarePlan().setInstantiatesCanonical(requestGroup.getInstantiatesCanonical())
         .setSubject(requestGroup.getSubject()).setStatus(CarePlan.CarePlanStatus.DRAFT)
@@ -286,7 +286,7 @@ public class PlanDefinitionProcessor extends BasePlanDefinitionProcessor<PlanDef
     if (!oc.getIssue().isEmpty()) {
       requestGroup.addContained(oc);
       requestGroup.addExtension(Constants.EXT_CRMI_MESSAGES,
-          new Reference("#" + oc.getIdPart()));
+          new Reference("#" + oc.getIdElement().getIdPart()));
     }
     resultBundle.addEntry().setResource(requestGroup);
     for (var resource : requestResources) {
@@ -469,7 +469,7 @@ public class PlanDefinitionProcessor extends BasePlanDefinitionProcessor<PlanDef
           practitionerId, organizationId, userType, userLanguage, userTaskContext, setting,
           settingContext, parameters, engine);
       result.setId(referenceToContained
-          ? new IdType(result.fhirType(), activityDefinition.getIdPart().replaceFirst("#", ""))
+          ? new IdType(result.fhirType(), activityDefinition.getIdElement().getIdPart().replaceFirst("#", ""))
           : activityDefinition.getIdElement().withResourceType(result.fhirType()));
     } catch (Exception e) {
       var message =
@@ -603,7 +603,7 @@ public class PlanDefinitionProcessor extends BasePlanDefinitionProcessor<PlanDef
           requestResources.add(populatedQuestionnaire);
         }
         task.setFocus(new Reference(
-            new IdType(FHIRAllTypes.QUESTIONNAIRE.toCode(), populatedQuestionnaire.getIdPart())));
+            new IdType(FHIRAllTypes.QUESTIONNAIRE.toCode(), populatedQuestionnaire.getIdElement().getIdPart())));
         task.setFor(requestGroup.getSubject());
       }
     }
