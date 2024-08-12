@@ -40,8 +40,8 @@ jobs:
               "username": "${{ secrets.MAVEN_REPO_USERNAME }}",
               "password": "${{ secrets.MAVEN_REPO_PASSWORD }}"
             }]
-        if: ${{ github.ref == 'refs/heads/master' && github.repository_owner == 'I-TECH-UW' }}
+        if: ${{ github.ref == 'refs/heads/develop' && github.repository_owner == 'I-TECH-UW' }}
 
       - name: Deploy
         run: mvn --batch-mode clean deploy -DskipTests
-        if: ${{ github.ref == 'refs/heads/master' && github.repository_owner == 'I-TECH-UW' }}
+        if: ${{ github.ref == 'refs/heads/develop' && github.repository_owner == 'I-TECH-UW' }}
