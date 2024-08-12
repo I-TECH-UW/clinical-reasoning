@@ -5,7 +5,7 @@
 
   <groupId>org.opencds.cqf.cql</groupId>
   <artifactId>evaluator.plandefinition</artifactId>
-  <version>3.0.0-PRE5</version>
+  <version>3.0.1-PRE5</version>
   <packaging>jar</packaging>
 
   <name>evaluator.plandefinition</name>
